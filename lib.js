@@ -1,25 +1,16 @@
+var fs = require('fs');
 var recast = require('recast');
-var fnDecl = require('./transformers/fnDeclaration');
-var PATH = require('path');
-var FS = require('fs');
-
+var instrument = require('./transformers/instrument');
 var config = require('./config.json');
 
-function resolvePath(filename) {
-  var root = process.cwd();
-  var sourceFolder = PATH.resolve(root, config.sourceFolder);
-  // startsWith
-  return filename.indexOf(sourceFolder) === 0 ? filename.replace(root, '') : null;
-}
+function generateSourceMap(map){
+  function toBase64(string){
+    return new Buffer(string).toString('base64')
+  }
 
-function toBase64(code){
-  return new Buffer(code).toString('base64');
-}
-
-function generateSourceMap(code){
   return [
-    '\n//# sourceMappingURL=data:application/json;base64,',
-    toBase64(code)
+    '\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,',
+    toBase64(JSON.stringify(map))
   ].join('');
 }
 
@@ -29,37 +20,36 @@ function instrumentCode(content, filename){
     sourceFileName: filename
   });
 
-  recast.visit(ast, fnDecl);
+  instrument(ast, filename);
 
   var instrumentedCode = recast.print(ast, {
     sourceMapName: filename + '.map'
   });
 
   return instrumentedCode.code.concat(
-    '; function x(coord, fn){console.log(coord); return fn}',
-    generateSourceMap(JSON.stringify(instrumentedCode.map))
+    generateSourceMap(instrumentedCode.map)
   );
 };
 
 function processCode(content, filename, cb){
-  try{
-    var filename = resolvePath(filename);
-    var result = filename ? instrumentCode(content, filename) : content;
-    cb(null, result);
-  } catch(e){
-    cb(e, null);
+  try {
+    cb(null, instrumentCode(content, filename));
+  } catch(err) {
+    console.warn('Error while instrumenting script: ' + filename);
+    cb(null, content);
   }
 }
 
 function processFile(filename, cb){
-  return FS.readFile(filename, 'utf-8', function(err, content){
-    if (err) cb(err, null);
+  return fs.readFile(filename, 'utf-8', function(err, content){
+    if (err)
+      cb(err, null);
+
     processCode(content, filename, cb);
   });
 }
 
 module.exports = {
-  resolvePath: resolvePath,
   instrumentCode: instrumentCode,
   processCode: processCode,
   processFile: processFile
