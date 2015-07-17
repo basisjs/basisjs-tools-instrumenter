@@ -4,9 +4,13 @@ var instrument = require('./transformers/instrument');
 var config = require('./config.json');
 
 function generateSourceMap(map){
+  function toBase64(string){
+    return new Buffer(string).toString('base64')
+  }
+
   return [
-    '\n//# sourceMappingURL=data:application/json;base64,',
-    new Buffer(JSON.stringify(map)).toString('base64')
+    '\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,',
+    toBase64(JSON.stringify(map))
   ].join('');
 }
 
