@@ -1,13 +1,12 @@
 var registratorName = require('./config').registratorName;
-var lib = require('./lib');
 var injectCode = require('fs')
   .readFileSync(__dirname + '/inject.js', 'utf-8')
   .replace('__ref__', registratorName);
- 
+
 module.exports = {
-  server: function(api){
+  server: function(api, options){
     var htmlTools = api.html;
- 
+
     api.addPreprocessor('.html', function(content, filename, cb){
       var ast = htmlTools.parse(content);
       var scripts = htmlTools.getElementsByName(ast, 'script');
@@ -33,19 +32,19 @@ module.exports = {
             script.attribs[attrName] += '\n,devInfoResolver:' + registratorName;
           }
         }
-      })
-      
+      });
+
       if (firstScript) {
         htmlTools.insertBefore(firstScript, injectScript);
       } else {
         htmlTools.injectToHead(ast, injectScript);
       }
- 
+
       cb(null, htmlTools.translate(ast));
     });
- 
+
     api.addPreprocessor('.js', function(content, filename, cb){
-      return lib.processCode(content, filename, cb);
+      return require('./lib')(options).processCode(content, filename, cb);
     });
   }
 };
