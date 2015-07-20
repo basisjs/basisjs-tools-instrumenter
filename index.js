@@ -43,8 +43,6 @@ module.exports = {
       cb(null, htmlTools.translate(ast));
     });
 
-    api.addPreprocessor('.js', function(content, filename, cb){
-      return require('./lib')(options).processCode(content, filename, cb);
-    });
+    api.addPreprocessor('.js', require('./lib').processCode);
   }
 };
