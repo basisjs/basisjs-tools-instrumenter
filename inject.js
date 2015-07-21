@@ -19,9 +19,10 @@ window.__ref__ = (function(){
 
   result.fixSourceOffset = function(source, offset) {
     if (offset && typeof btoa == 'function') {
-      offset = String(offset || 0);
-                              //{"version":3,"sections":[{"offset":{"line:0,"
-      source = source.replace(/(eyJ2ZXJzaW9uIjozLCJzZWN0aW9ucyI6W3sib2Zmc2V0Ijp7ImxpbmUi)OjAs/, '$1' + btoa(':' + offset + ','));
+      offset = ':' + (offset || 0) + ',';
+      while (offset.length % 3) offset += ' ';  // get rid of base64 padding
+      //{"version":3,"sections":[{"offset":{"line:0,"
+      source = source.replace(/(eyJ2ZXJzaW9uIjozLCJzZWN0aW9ucyI6W3sib2Zmc2V0Ijp7ImxpbmUi)OjAs/, '$1' + btoa(offset));
     }
 
     return source;
