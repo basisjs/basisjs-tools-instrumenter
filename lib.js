@@ -1,6 +1,5 @@
 var fs = require('fs');
-var recast = require('recast');
-var instrument = require('./transformers/instrument');
+var babel = require('babel');
 
 function generateSourceMap(map){
   function toBase64(string){
@@ -14,16 +13,12 @@ function generateSourceMap(map){
 }
 
 function instrumentCode(content, filename){
-  var ast = recast.parse(content, {
-    // sourceFileName should point on the same file
-    sourceFileName: filename
+  var instrumentedCode = babel.transform(content, {
+    filename: filename,
+    sourceMaps: true,
+    plugins: ['./transformers/instrument.js']
   });
 
-  instrument(ast, filename);
-
-  var instrumentedCode = recast.print(ast, {
-    sourceMapName: filename + '.map'
-  });
 
   return instrumentedCode.code.concat(
     generateSourceMap({
@@ -34,7 +29,7 @@ function instrumentCode(content, filename){
       }]
     })
   );
-};
+}
 
 function processCode(content, filename, cb){
   try {
@@ -43,7 +38,7 @@ function processCode(content, filename, cb){
     console.warn('Error while instrumenting script: ' + filename, err);
     cb(null, content);
   }
-};
+}
 
 function processFile(filename, cb){
   return fs.readFile(filename, 'utf-8', function(err, content){
@@ -52,7 +47,7 @@ function processFile(filename, cb){
 
     processCode(content, filename, cb);
   });
-};
+}
 
 module.exports = {
   instrumentCode: instrumentCode,
