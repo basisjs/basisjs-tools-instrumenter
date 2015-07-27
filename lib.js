@@ -21,7 +21,7 @@ function instrumentCode(content, filename){
     filename: filename,
     sourceMaps: true,
     sourceFileName: filename + '?instr',
-    plugins: [__dirname + '/instrument.js'],
+    plugins: ['source-wrapper'],
     whitelist: [],
     blacklist: ['strict']
   });
