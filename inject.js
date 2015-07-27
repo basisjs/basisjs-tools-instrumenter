@@ -21,8 +21,11 @@ window.__ref__ = (function(){
     if (offset && typeof btoa == 'function') {
       offset = ':' + (offset || 0) + ',';
       while (offset.length % 3) offset += ' ';  // get rid of base64 padding
-      //{"version":3,"sections":[{"offset":{"line:0,"
-      source = source.replace(/(eyJ2ZXJzaW9uIjozLCJzZWN0aW9ucyI6W3sib2Zmc2V0Ijp7ImxpbmUi)OjAs/, '$1' + btoa(offset));
+      source = source
+        //{"version":3,"sections":[{"offset":{"line:0,"
+        .replace(/(eyJ2ZXJzaW9uIjozLCJzZWN0aW9ucyI6W3sib2Zmc2V0Ijp7ImxpbmUi)OjAs/, '$1' + btoa(offset))
+        // cut off ?instr
+        .replace(/P2luc3Ry/, '');
     }
 
     return source;
