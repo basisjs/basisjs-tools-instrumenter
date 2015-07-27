@@ -5,10 +5,14 @@ function generateSourceMap(map){
   function toBase64(string){
     return new Buffer(string).toString('base64')
   }
-
+  // get rid of ?instr in name for generated files. ?instr uses for <script> js files only
   return [
     '\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,',
-    toBase64(JSON.stringify(map))
+    toBase64(JSON.stringify(map).replace('(,"sources":[)("[^"]+")', function(m, prefix, filename){
+      while (filename.length % 3 != 1)
+        filename = ' ' + filename;
+      return prefix + filename;
+    }))
   ].join('');
 }
 
@@ -16,9 +20,11 @@ function instrumentCode(content, filename){
   var instrumentedCode = babel.transform(content, {
     filename: filename,
     sourceMaps: true,
-    plugins: ['./transformers/instrument.js']
+    sourceFileName: filename + '?instr',
+    plugins: [__dirname + '/instrument.js'],
+    whitelist: [],
+    blacklist: ['strict']
   });
-
 
   return instrumentedCode.code.concat(
     generateSourceMap({

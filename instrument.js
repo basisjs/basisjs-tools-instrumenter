@@ -1,5 +1,5 @@
 'use strict';
-var registratorName = require('../config').registratorName;
+var registratorName = require('./config').registratorName;
 
 module.exports = function (_ref) {
   var Plugin = _ref.Plugin;
@@ -11,7 +11,9 @@ module.exports = function (_ref) {
       [
         file.opts.filename || '',
         node.loc.start.line,
-        node.loc.start.column + 1
+        node.loc.start.column + 1,
+        node.loc.end.line,
+        node.loc.end.column + 1
       ].join(':')
       : null;
   }
