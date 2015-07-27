@@ -21,7 +21,7 @@ function instrumentCode(content, filename){
     filename: filename,
     sourceMaps: true,
     sourceFileName: filename + '?instr',
-    plugins: ['source-wrapper'],
+    plugins: [require('babel-plugin-source-wrapper')(require('./config'))],
     whitelist: [],
     blacklist: ['strict']
   });
