@@ -1,28 +1,29 @@
 var fs = require('fs');
-var recast = require('recast');
-var instrument = require('./transformers/instrument');
+var babel = require('babel');
 
 function generateSourceMap(map){
   function toBase64(string){
     return new Buffer(string).toString('base64')
   }
-
+  // get rid of ?instr in name for generated files. ?instr uses for <script> js files only
   return [
     '\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,',
-    toBase64(JSON.stringify(map))
+    toBase64(JSON.stringify(map).replace(/(,"sources":[)("[^"]+")/, function(m, prefix, filename){
+      while (filename.length % 3 != 1)
+        filename = ' ' + filename;
+      return prefix + filename;
+    }))
   ].join('');
 }
 
 function instrumentCode(content, filename){
-  var ast = recast.parse(content, {
-    // sourceFileName should point on the same file
-    sourceFileName: filename
-  });
-
-  instrument(ast, filename);
-
-  var instrumentedCode = recast.print(ast, {
-    sourceMapName: filename + '.map'
+  var instrumentedCode = babel.transform(content, {
+    filename: filename,
+    sourceMaps: true,
+    sourceFileName: filename + '?instr',
+    plugins: [require('babel-plugin-source-wrapper')(require('./config'))],
+    whitelist: [],
+    blacklist: ['strict']
   });
 
   return instrumentedCode.code.concat(
@@ -34,7 +35,7 @@ function instrumentCode(content, filename){
       }]
     })
   );
-};
+}
 
 function processCode(content, filename, cb){
   try {
@@ -43,7 +44,7 @@ function processCode(content, filename, cb){
     console.warn('Error while instrumenting script: ' + filename, err);
     cb(null, content);
   }
-};
+}
 
 function processFile(filename, cb){
   return fs.readFile(filename, 'utf-8', function(err, content){
@@ -52,7 +53,7 @@ function processFile(filename, cb){
 
     processCode(content, filename, cb);
   });
-};
+}
 
 module.exports = {
   instrumentCode: instrumentCode,
