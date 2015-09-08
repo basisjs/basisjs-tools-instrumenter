@@ -1,7 +1,19 @@
 {
   "name": "basisjs-tools-instrumenter",
+  "description": "JavaScript source code location instrumenter for basisjs-tools",
   "version": "0.0.3",
+  "homepage": "https://github.com/basisjs/basisjs-tools-instumenter",
+  "repository": "basisjs/basisjs-tools-instrumenter",
+  "license": "MIT",
+  "author": "Mikhail Shustov <restrry@gmail.com>",
+  "contributors": [
+    "Roman Dvornov <rdvornov@gmail.com>"
+  ],
+  "engines": {
+    "node": ">=0.10.0"
+  },
   "dependencies": {
+    "basisjs-tools-ast": "^1.0.0",
     "babel": "^5.6.14",
     "babel-plugin-source-wrapper": "restrry/babel-plugin-source-wrapper"
   }
