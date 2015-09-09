@@ -29,27 +29,31 @@ module.exports = function(options){
     content = String(content || '');
     filename = filename || 'unknown';
 
-    var instrumentedCode = babel.transform(content, {
-      filename: filename,
-      sourceMaps: true,
-      sourceFileName: filename + '?instr',
-      plugins: [
-        require('babel-plugin-source-wrapper')({
-          registratorName: registratorName
-        })
-      ],
-      whitelist: [],         // prevent use any other transformers
-      blacklist: ['strict']  // prevent add "use strict" to sources
-    });
+    try {
+      var instrumentedCode = babel.transform(content, {
+        filename: filename,
+        sourceMaps: true,
+        sourceFileName: filename + '?instr',
+        plugins: [
+          require('babel-plugin-source-wrapper')({
+            registratorName: registratorName
+          })
+        ],
+        whitelist: [],         // prevent use any other transformers
+        blacklist: ['strict']  // prevent add "use strict" to sources
+      });
 
-    cb(null, instrumentedCode.code +
-      generateSourceMap({
-        version: instrumentedCode.map.version,
-        sections: [{
-          offset: { line: 0, column: 0 },
-          map: instrumentedCode.map
-        }]
-      })
-    );
+      cb(null, instrumentedCode.code +
+        generateSourceMap({
+          version: instrumentedCode.map.version,
+          sections: [{
+            offset: { line: 0, column: 0 },
+            map: instrumentedCode.map
+          }]
+        })
+      );
+    } catch(e) {
+      cb(e);
+    }
   }
 };
