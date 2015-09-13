@@ -7,10 +7,10 @@ window.__ref__ = (function(){
   }
 
   var map = new WeakMap();
-  var result = function(ref, data){
-    if (ref && (typeof ref === 'object' || typeof ref === 'function')) {
+  var result = function(ref, data, force){
+    if (data && ref && (typeof ref === 'object' || typeof ref === 'function')) {
       var curData = map.get(ref);
-      if (!curData || (curData.blackbox && !data.blackbox)) {
+      if (force || !curData || (curData.blackbox && !data.blackbox)) {
         map.set(ref, data);
       }
     }
