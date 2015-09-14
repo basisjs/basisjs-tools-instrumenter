@@ -1,13 +1,13 @@
 window.__ref__ = (function(){
   if (typeof WeakMap !== 'function') {
     console.info('basisjs-tools-instrumenter is not available');
-    return function(ref){
+    return function(ref) {
       return ref;
     };
   }
 
   var map = new WeakMap();
-  var result = function(ref, data, force){
+  var result = function(ref, data, force) {
     if (data && ref && (typeof ref === 'object' || typeof ref === 'function')) {
       var curData = map.get(ref);
       if (force || !curData || (curData.blackbox && !data.blackbox)) {

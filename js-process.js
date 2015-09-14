@@ -1,15 +1,15 @@
 var fs = require('fs');
 var babel = require('babel');
 
-function generateSourceMap(map){
-  function toBase64(string){
+function generateSourceMap(map) {
+  function toBase64(string) {
     return new Buffer(string).toString('base64');
   }
 
   var mapStr = JSON.stringify(map);
 
   // align `?instr` in filename to fold 4
-  mapStr = mapStr.replace(/(,"sources":\[)("[^"]+")/, function(m, prefix, filename){
+  mapStr = mapStr.replace(/(,"sources":\[)("[^"]+")/, function(m, prefix, filename) {
     while (filename.length % 3 != 1)
       filename = ' ' + filename;
     return prefix + filename;
@@ -22,10 +22,10 @@ function generateSourceMap(map){
   );
 }
 
-module.exports = function(options){
+module.exports = function(options) {
   var registratorName = options.registratorName;
 
-  return function instrumentCode(content, filename, cb){
+  return function instrumentCode(content, filename, cb) {
     content = String(content || '');
     filename = filename || 'unknown';
 
@@ -36,7 +36,8 @@ module.exports = function(options){
         sourceFileName: filename + '?instr',
         plugins: [
           require('babel-plugin-source-wrapper')({
-            registratorName: registratorName
+            registratorName: registratorName,
+            blackbox: options.blackbox
           })
         ],
         whitelist: [],         // prevent use any other transformers

@@ -1,26 +1,23 @@
-var htmlTools = require('basisjs-tools-ast').html;
+var html = require('basisjs-tools-ast').html;
 
 module.exports = function(options){
   var registratorName = options.registratorName;
-  var injectCode = require('fs')
-    .readFileSync(__dirname + '/js-runtime.js', 'utf-8')
-    .replace('__ref__', registratorName);
+  var injectScriptFilename = options.injectScriptFilename;
 
-  return function processHtml(content, filename, cb){
-    var ast = htmlTools.parse(content);
-    var scripts = htmlTools.getElementsByName(ast, 'script');
+  return function processHtml(content, filename, cb) {
+    var ast = html.parse(content);
+    var scripts = html.getElementsByName(ast, 'script');
     var firstScript = scripts[0];
     var injectScript = {
       type: 'tag',
       name: 'script',
-      attribs: {},
-      children: [{
-        type: 'text',
-        data: injectCode
-      }]
+      attribs: {
+        src: injectScriptFilename
+      },
+      children: []
     };
 
-    scripts.forEach(function(script){
+    scripts.forEach(function(script) {
       if (script.attribs) {
         var attrName =
           'data-basis-config' in script.attribs ? 'data-basis-config' :
@@ -34,11 +31,11 @@ module.exports = function(options){
     });
 
     if (firstScript) {
-      htmlTools.insertBefore(firstScript, injectScript);
+      html.insertBefore(firstScript, injectScript);
     } else {
-      htmlTools.injectToHead(ast, injectScript);
+      html.injectToHead(ast, injectScript);
     }
 
-    cb(null, htmlTools.translate(ast));
+    cb(null, html.translate(ast));
   };
 };
