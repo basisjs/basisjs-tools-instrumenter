@@ -7,7 +7,7 @@ module.exports = {
 
     var processorConfig = {
       registratorName: registratorName,
-      blackbox: Array.isArray(options.blackbox) ? options.blackbox : [],
+      blackbox: Array.isArray(options.blackbox) ? options.blackbox : null,
       injectScriptFilename: api.addVirtualFile('runtime.js', injectScript)
     };
 
