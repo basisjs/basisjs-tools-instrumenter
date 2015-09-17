@@ -33,14 +33,33 @@ You could pass additional parameters for plugin:
         "build/**"
       ],
       "options": {
-        "registratorName": "youOwnName"
+        "registratorName": "youOwnName",
+        "blackbox": ["/build/**"]
       }
     }
   ]
 }
 ```
 
-By `ignore` option we set of file path masks (`minimatch` is used) that should not be instrumented. `registratorName` sets custom name for function that wraps code.
+By `ignore` option we set of file path masks (`minimatch` is used) that should not to be instrumented.
+
+### Options
+
+All options are optional.
+
+#### registratorName
+
+- Type: `String`
+- Default: `$devinfo`
+
+Set custom name for wrap function. This function also will be host of API.
+
+#### blackbox
+
+- Type: `Array` or `false`
+- Default: `["/bower_compontents/**", "/node_modules/**"]`
+
+List of `minimatch` masks for source filenames, which dev info should be marked as `blackbox`. Info with `blackbox: true` has lower priority and overrides by info without this marker.
 
 ## How does it works
 
@@ -58,9 +77,9 @@ var a = {
 After instrumenting this code will looks:
 
 ```js
-var a = $loc_h8tz9yd7({
+var a = $devinfo({
   foo: 1,
-  bar: $loc_h8tz9yd7(function () {
+  bar: $devinfo(function () {
     return 123;
   }, {
     loc: "filename:3:8:5:4"
@@ -75,7 +94,7 @@ var a = $loc_h8tz9yd7({
 //# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzZWN0aW9ucyI6…AxLFxuICBiYXI6IGZ1bmN0aW9uKCl7XG4gICAgcmV0dXJuIDEyMztcbiAgfVxufTsiXX19XX0=
 ```
 
-As you can see, some expressions was wrapped by function `$loc_h8tz9yd7` (it's name by default, but you can set name via `registratorName` function). This function returns first argument as is. But also associates (attach) second argument (meta info) to first argument. `WeakMap` is used for this.
+As you can see, some expressions was wrapped by function `$devinfo` (it's name by default, but you can set name via `registratorName` function). This function returns first argument as is. But also associates (attach) second argument (meta info) to first argument. `WeakMap` is used for this.
 
 Meta info contains infomation about range in source wrapped expression in source (`loc` property). It also could store some additional infomation like map of object value ranges for object literals.
 
@@ -93,10 +112,10 @@ Registraction function has additional methods:
 ```js
 var obj = {};
 
-$loc_h8tz9yd7(obj, { someInfo: 123 });
+$devinfo(obj, { someInfo: 123 });
 // or
-$loc_h8tz9yd7.set(obj, { someInfo: 123 });
+$devinfo.set(obj, { someInfo: 123 });
 
-console.log($loc_h8tz9yd7.get(obj));
+console.log($devinfo.get(obj));
 // { someInfo: 123 }
 ```
