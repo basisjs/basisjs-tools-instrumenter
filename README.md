@@ -119,3 +119,44 @@ $devinfo.set(obj, { someInfo: 123 });
 console.log($devinfo.get(obj));
 // { someInfo: 123 }
 ```
+
+## Using with webpack
+
+Plugin could be used with `webpack`. In this case `webpack` should instrument source code by `Babel` and [babel-plugin-source-wrapper](https://github.com/restrry/babel-plugin-source-wrapper) and `basisjs-tools-instrumenter` should do everything else except instrumenting.
+
+Settings for Babel in `webpack.config.js`:
+
+```js
+module.exports = {
+  // ...
+  babel: {
+    sourceMaps: true,  // source maps are required
+    plugins: [
+      // in case you use React, this plugin should be applied
+      // before babel-plugin-source-wrapper
+      // otherwise component names will not to be shown propertly
+      require('babel-plugin-react-display-name'),
+
+      // plugin to instrument source code
+      require('babel-plugin-source-wrapper')({
+        // webpack sends absolute paths to plugins
+        // but we need paths relative to project root
+        basePath: process.cwd()
+      })
+    ]
+  }
+};
+```
+
+Disallow instrumenting for `basisjs-tools-instrumenter` in `basis.config`:
+
+```json
+{
+  "plugins": [
+    {
+      "name": "basisjs-tools-instrumenter",
+      "ignore": ["**/*.js"]
+    }
+  ]
+}
+```
