@@ -35,7 +35,7 @@ module.exports = function(options) {
         sourceMaps: true,
         sourceFileName: filename + '?instr',
         plugins: [
-          require('babel-plugin-source-wrapper')({
+          require('babel-plugin-source-wrapper').configure({
             registratorName: registratorName,
             blackbox: options.blackbox
           })
