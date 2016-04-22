@@ -1,3 +1,7 @@
+## 1.0.3 (April 22, 2015)
+
+- Fix `basis-config` attribute value lost on config patching
+
 ## 1.0.2 (April 20, 2015)
 
 - Fix `basis-config` patching for case when attribute value is empty
