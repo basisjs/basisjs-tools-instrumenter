@@ -26,7 +26,7 @@ module.exports = function(options){
 
         if (attrName) {
           var oldValue = script.attribs[attrName].trim();
-          script.attribs[attrName] = (oldValue ? '\n,' : '') + 'devInfoResolver:' + registratorName;
+          script.attribs[attrName] = (oldValue ? oldValue + '\n,' : '') + 'devInfoResolver:' + registratorName;
         }
       }
     });
