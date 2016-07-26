@@ -1,4 +1,9 @@
-Code instrumenter plugin for basisjs-tools.
+# basisjs-tools-instrumenter
+
+[![NPM version](https://img.shields.io/npm/v/basisjs-tools-instrumenter.svg)](https://www.npmjs.com/package/basisjs-tools-instrumenter)
+[![Dependency Status](https://img.shields.io/david/basisjs/basisjs-tools-instrumenter.svg)](https://david-dm.org/basisjs/basisjs-tools-instrumenter)
+
+Source code instrumenting plugin for [basisjs-tools](https://github.com/basisjs/basisjs-tools). Based on [Babel](https://github.com/babel/babel) and [babel-plugin-source-wrapper](https://github.com/restrry/babel-plugin-source-wrapper).
 
 ## Install
 
@@ -7,6 +12,8 @@ npm install basisjs-tools-instrumenter
 ```
 
 ## Usage
+
+> NOTE: `basisjs-tools` 1.5 or highest is required.
 
 Add to `basis.config` those settings:
 
@@ -19,8 +26,6 @@ Add to `basis.config` those settings:
 ```
 
 That's all!
-
-> NOTE: You need basisjs-tools 1.5 or highest, as basisjs-tools starts support for plugins since 1.5.
 
 You could pass additional parameters for plugin:
 
@@ -52,7 +57,7 @@ All options are optional.
 - Type: `String`
 - Default: `$devinfo`
 
-Set custom name for wrap function. This function also will be host of API.
+Set custom name for API.
 
 #### blackbox
 
@@ -63,7 +68,7 @@ List of `minimatch` masks for source filenames, which dev info should be marked 
 
 ## How does it works
 
-This plugins process all `.js` files and modify (instrument) code to reach main goal: provide location information about some object or function, i.e. tell where value was defined. Let's look for simple example:
+This plugins process all `.js` files and modify (instrument) code to provide location information about some object or function later, i.e. answer to question where value was defined. Let's look for simple example:
 
 ```js
 var a = {
@@ -74,7 +79,7 @@ var a = {
 };
 ```
 
-After instrumenting this code will looks:
+It will be instrumented to:
 
 ```js
 var a = $devinfo({
@@ -94,11 +99,11 @@ var a = $devinfo({
 //# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzZWN0aW9ucyI6…AxLFxuICBiYXI6IGZ1bmN0aW9uKCl7XG4gICAgcmV0dXJuIDEyMztcbiAgfVxufTsiXX19XX0=
 ```
 
-As you can see, some expressions was wrapped by function `$devinfo` (it's name by default, but you can set name via `registratorName` function). This function returns first argument as is. But also associates (attach) second argument (meta info) to first argument. `WeakMap` is used for this.
+As you can see, some expressions was wrapped by function `$devinfo()` (default name, but you can set it via `registratorName` option). This function returns first argument as is. But associates (attach) second argument (meta data) to first argument. `WeakMap` is used for that.
 
-Meta info contains infomation about range in source wrapped expression in source (`loc` property). It also could store some additional infomation like map of object value ranges for object literals.
+Meta data contains infomation about wrapped expression range in source (`loc` property). It can store additional infomation in some cases, e.g. map of object value ranges for object literals.
 
-As code instrumentation pollute original source plugin adds source map to result. This means you'll see original source in browser developer tools instead of instrumented.
+Since instrumentation corrupt original code plugin adds source map to result. It means you'll see original source in browser's developer tools instead of instrumented.
 
 It also process `.html` files to inject required API to global scope, and adds reference to those API to `basisjs-config` if any found.
 
@@ -122,7 +127,7 @@ console.log($devinfo.get(obj));
 
 ## Using with webpack
 
-Plugin could be used with `webpack`. In this case `webpack` should instrument source code by `Babel` and [babel-plugin-source-wrapper](https://github.com/restrry/babel-plugin-source-wrapper) and `basisjs-tools-instrumenter` should do everything else except instrumenting.
+Plugin can be used with `webpack`. In this case `webpack` should instrument source code by `Babel` and [babel-plugin-source-wrapper](https://github.com/restrry/babel-plugin-source-wrapper) and `basisjs-tools-instrumenter` should do everything else except instrumenting.
 
 Settings for Babel in `webpack.config.js`:
 
