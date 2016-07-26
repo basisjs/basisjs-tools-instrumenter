@@ -10,11 +10,11 @@
     "Roman Dvornov <rdvornov@gmail.com>"
   ],
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=0.12.0"
   },
   "dependencies": {
     "basisjs-tools-ast": "^1.0.0",
-    "babel": "^5.6.14",
-    "babel-plugin-source-wrapper": "^1.1.0"
+    "babel-core": "*",
+    "babel-plugin-source-wrapper": "^2.0.0-alpha.3"
   }
 }

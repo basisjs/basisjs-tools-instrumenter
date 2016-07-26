@@ -1,5 +1,5 @@
 var fs = require('fs');
-var babel = require('babel');
+var babel = require('babel-core');
 
 function generateSourceMap(map) {
   function toBase64(string) {
@@ -39,9 +39,7 @@ module.exports = function(options) {
             registratorName: registratorName,
             blackbox: options.blackbox
           })
-        ],
-        whitelist: [],         // prevent use any other transformers
-        blacklist: ['strict']  // prevent add "use strict" to sources
+        ]
       });
 
       cb(null, instrumentedCode.code +

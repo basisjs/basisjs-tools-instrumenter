@@ -3,7 +3,7 @@ module.exports = {
     var registratorName = options.registratorName || '$devinfo';
     var injectScript = require('fs')
       .readFileSync(__dirname + '/js-runtime.js', 'utf-8')
-      .replace('__ref__', registratorName)
+      .replace('__ref__', registratorName);
 
     var processorConfig = {
       registratorName: registratorName,
