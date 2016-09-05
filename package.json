@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "basisjs-tools-ast": "^1.0.0",
-    "babel-core": "*",
-    "babel-plugin-source-wrapper": "^2.0.0-alpha.3"
+    "babel-core": "^6.0.0",
+    "babel-plugin-source-wrapper": "^2.0.1"
   }
 }
