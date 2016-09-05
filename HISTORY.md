@@ -1,3 +1,7 @@
+## 2.1.0 (September 5, 2016)
+
+- Pin `babel-core` version to `^6.0.0`
+
 ## 2.0.0 (July 26, 2016)
 
 - Upgraded to using `Babel 6`
